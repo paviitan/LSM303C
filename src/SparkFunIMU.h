@@ -6,40 +6,74 @@
 
 #include "Arduino.h"
 
-// Return values 
-typedef enum
-{
-  IMU_SUCCESS,
-  IMU_HW_ERROR,
-  IMU_NOT_SUPPORTED,
-  IMU_GENERIC_ERROR,
-  IMU_OUT_OF_BOUNDS,
-  //...
+// Return values
+typedef enum {
+    IMU_SUCCESS,
+    IMU_HW_ERROR,
+    IMU_NOT_SUPPORTED,
+    IMU_GENERIC_ERROR,
+    IMU_OUT_OF_BOUNDS,
+    //...
 } status_t;
 
-class SparkFunIMU
-{
-  protected:
+class SparkFunIMU {
+protected:
     status_t driverStatus; // Stores status of last operation
 
-  public:
+public:
     // begin() returns up to 16 who_am_i bits.  If there is only one serial
     //   device the MSBs will be zero
     virtual status_t begin(void) = 0; // Must be defined in derived classes
-	
-    virtual float readGyroX()  { return NAN; }
-    virtual float readGyroY()  { return NAN; }
-    virtual float readGyroZ()  { return NAN; }
-    virtual float readAccelX() { return NAN; }
-    virtual float readAccelY() { return NAN; }
-    virtual float readAccelZ() { return NAN; }
-    virtual float readMagX()   { return NAN; }
-    virtual float readMagY()   { return NAN; }
-    virtual float readMagZ()   { return NAN; }
-    virtual float readTempC()  { return NAN; }
-    virtual float readTempF()  { return NAN; }
 
-    status_t getStatus() { return driverStatus; }
+    virtual float readGyroX()
+    {
+        return NAN;
+    }
+    virtual float readGyroY()
+    {
+        return NAN;
+    }
+    virtual float readGyroZ()
+    {
+        return NAN;
+    }
+    virtual float readAccelX()
+    {
+        return NAN;
+    }
+    virtual float readAccelY()
+    {
+        return NAN;
+    }
+    virtual float readAccelZ()
+    {
+        return NAN;
+    }
+    virtual float readMagX()
+    {
+        return NAN;
+    }
+    virtual float readMagY()
+    {
+        return NAN;
+    }
+    virtual float readMagZ()
+    {
+        return NAN;
+    }
+    virtual float readTempC()
+    {
+        return NAN;
+    }
+    virtual float readTempF()
+    {
+        return NAN;
+    }
+
+    status_t getStatus()
+    {
+        return driverStatus;
+    }
 
     virtual ~SparkFunIMU() { }
 };
