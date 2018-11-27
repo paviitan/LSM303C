@@ -4,7 +4,6 @@
 // Public methods
 SparkFunIMU_status_t LSM303C::begin()
 {
-    debug_println(EMPTY);
     return
         begin(// Default to I2C bus
             MODE_I2C,
@@ -40,7 +39,6 @@ SparkFunIMU_status_t LSM303C::begin(LSM303C_InterfaceMode_t im, LSM303C_MAG_DO_t
     interfaceMode = im;
 
     if (interfaceMode == MODE_SPI) {
-        debug_println("Setting up SPI");
         // Setup pins for SPI
         // CS & CLK must be outputs DDRxn = 1
         bitSet(DIR_REG, CSBIT_MAG);
@@ -106,7 +104,6 @@ float LSM303C::readAccelX()
     SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
-        debug_println(AERROR);
         return NAN;
     }
 
@@ -125,14 +122,11 @@ float LSM303C::readAccelX()
             return IMU_HW_ERROR;
         }
 
-        debug_println("Fresh raw data");
-
         //convert from LSB to mg
         return int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC;
     }
 
     // Should never get here
-    debug_println("Returning NAN");
     return NAN;
 }
 
@@ -142,7 +136,6 @@ float LSM303C::readAccelY()
     SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
-        debug_println(AERROR);
         return NAN;
     }
 
@@ -161,14 +154,11 @@ float LSM303C::readAccelY()
             return IMU_HW_ERROR;
         }
 
-        debug_println("Fresh raw data");
-
         //convert from LSB to mg
         return int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC;
     }
 
     // Should never get here
-    debug_println("Returning NAN");
     return NAN;
 }
 
@@ -178,7 +168,6 @@ float LSM303C::readAccelZ()
     SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
-        debug_println(AERROR);
         return NAN;
     }
 
@@ -197,14 +186,11 @@ float LSM303C::readAccelZ()
             return IMU_HW_ERROR;
         }
 
-        debug_println("Fresh raw data");
-
         //convert from LSB to mg
         return (int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC);
     }
 
     // Should never get here
-    debug_println("Returning NAN");
     return NAN;
 }
 
@@ -251,7 +237,6 @@ float LSM303C::readAccel(LSM303C_AXIS_t dir)
     SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
-        debug_println(AERROR);
         return NAN;
     }
 
@@ -260,7 +245,6 @@ float LSM303C::readAccel(LSM303C_AXIS_t dir)
     // There are valid cases for this, like reading faster than refresh rate.
     if (flag_ACC_STATUS_FLAGS & ACC_ZYX_NEW_DATA_AVAILABLE) {
         response = ACC_GetAccRaw(accelData);
-        debug_println("Fresh raw data");
     }
     //convert from LSB to mg
     switch (dir) {
@@ -278,7 +262,6 @@ float LSM303C::readAccel(LSM303C_AXIS_t dir)
     }
 
     // Should never get here
-    debug_println("Returning NAN");
     return NAN;
 }
 
@@ -288,14 +271,12 @@ float LSM303C::readMag(LSM303C_AXIS_t dir)
     SparkFunIMU_status_t response = MAG_XYZ_AxDataAvailable(flag_MAG_XYZDA);
 
     if (response != IMU_SUCCESS) {
-        debug_println(MERROR);
         return NAN;
     }
 
     // Check for new data in the status flags with a mask
     if (flag_MAG_XYZDA & MAG_XYZDA_YES) {
         response = MAG_GetMagRaw(magData);
-        debug_println("Fresh raw data");
     }
     //convert from LSB to Gauss
     switch (dir) {
@@ -313,17 +294,14 @@ float LSM303C::readMag(LSM303C_AXIS_t dir)
     }
 
     // Should never get here
-    debug_println("Returning NAN");
     return NAN;
 }
 
 SparkFunIMU_status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 {
-    debug_print(EMPTY);
-    uint8_t valueL;
-    uint8_t valueH;
+	uint8_t valueL;
+	uint8_t valueH;
 
-    debug_println("& was false");
     if (MAG_ReadReg(MAG_OUTX_L, valueL)) {
         return IMU_HW_ERROR;
     }
@@ -360,11 +338,9 @@ SparkFunIMU_status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 // Methods required to get device up and running
 SparkFunIMU_status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (MAG_ReadReg(MAG_CTRL_REG1, value)) {
-        debug_printlns("Failed Read from MAG_CTRL_REG1");
         return IMU_HW_ERROR;
     }
 
@@ -381,7 +357,6 @@ SparkFunIMU_status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
 
 SparkFunIMU_status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (MAG_ReadReg(MAG_CTRL_REG2, value)) {
@@ -400,7 +375,6 @@ SparkFunIMU_status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
 
 SparkFunIMU_status_t LSM303C::MAG_BlockDataUpdate(LSM303C_MAG_BDU_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (MAG_ReadReg(MAG_CTRL_REG5, value)) {
@@ -431,7 +405,6 @@ SparkFunIMU_status_t LSM303C::MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &value
 
 SparkFunIMU_status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
 {
-    debug_print(EMPTY);
 
     uint8_t value;
 
@@ -451,7 +424,6 @@ SparkFunIMU_status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
 
 SparkFunIMU_status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (MAG_ReadReg(MAG_CTRL_REG4, value)) {
@@ -470,12 +442,9 @@ SparkFunIMU_status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
 
 SparkFunIMU_status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (MAG_ReadReg(MAG_CTRL_REG3, value)) {
-        debug_print("Failed to read MAG_CTRL_REG3. 'Read': 0x");
-        debug_printlns(value, HEX);
         return IMU_HW_ERROR;
     }
 
@@ -491,11 +460,9 @@ SparkFunIMU_status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
 
 SparkFunIMU_status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (ACC_ReadReg(ACC_CTRL4, value)) {
-        debug_printlns("Failed ACC read");
         return IMU_HW_ERROR;
     }
 
@@ -512,7 +479,6 @@ SparkFunIMU_status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
 
 SparkFunIMU_status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (ACC_ReadReg(ACC_CTRL1, value)) {
@@ -531,11 +497,9 @@ SparkFunIMU_status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
 
 SparkFunIMU_status_t LSM303C::ACC_EnableAxis(uint8_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (ACC_ReadReg(ACC_CTRL1, value)) {
-        debug_println(AERROR);
         return IMU_HW_ERROR;
     }
 
@@ -551,7 +515,6 @@ SparkFunIMU_status_t LSM303C::ACC_EnableAxis(uint8_t val)
 
 SparkFunIMU_status_t LSM303C::ACC_SetODR(LSM303C_ACC_ODR_t val)
 {
-    debug_print(EMPTY);
     uint8_t value;
 
     if (ACC_ReadReg(ACC_CTRL1, value)) {
@@ -588,8 +551,6 @@ SparkFunIMU_status_t LSM303C::MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t val)
 
 SparkFunIMU_status_t LSM303C::MAG_ReadReg(LSM303C_MAG_REG_t reg, uint8_t &data)
 {
-    debug_print("Reading register 0x");
-    debug_printlns(reg, HEX);
     SparkFunIMU_status_t ret = IMU_GENERIC_ERROR;
 
     if (interfaceMode == MODE_I2C) {
@@ -606,7 +567,6 @@ SparkFunIMU_status_t LSM303C::MAG_ReadReg(LSM303C_MAG_REG_t reg, uint8_t &data)
 
 uint8_t  LSM303C::MAG_WriteReg(LSM303C_MAG_REG_t reg, uint8_t data)
 {
-    debug_print(EMPTY);
     uint8_t ret;
 
     if (interfaceMode == MODE_I2C) {
@@ -622,8 +582,6 @@ uint8_t  LSM303C::MAG_WriteReg(LSM303C_MAG_REG_t reg, uint8_t data)
 
 SparkFunIMU_status_t LSM303C::ACC_ReadReg(LSM303C_ACC_REG_t reg, uint8_t &data)
 {
-    debug_print("Reading address 0x");
-    debug_printlns(reg, HEX);
     SparkFunIMU_status_t ret;
 
     if (interfaceMode == MODE_I2C) {
@@ -644,7 +602,6 @@ SparkFunIMU_status_t LSM303C::ACC_ReadReg(LSM303C_ACC_REG_t reg, uint8_t &data)
 
 uint8_t  LSM303C::ACC_WriteReg(LSM303C_ACC_REG_t reg, uint8_t data)
 {
-    debug_print(EMPTY);
     uint8_t ret;
 
     if (interfaceMode == MODE_I2C) {
@@ -661,8 +618,6 @@ uint8_t  LSM303C::ACC_WriteReg(LSM303C_ACC_REG_t reg, uint8_t data)
 // This function uses bit manibulation for higher speed & smaller code
 uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 {
-    debug_print("Reading register 0x");
-    debug_printlns(data, HEX);
     uint8_t counter;
 
     // Set the read/write bit (bit 7) to do a read
@@ -733,11 +688,6 @@ uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 // This function uses bit manibulation for higher speed & smaller code
 SparkFunIMU_status_t LSM303C::SPI_WriteByte(LSM303C_CHIP_t chip, uint8_t reg, uint8_t data)
 {
-    debug_print("Writing 0x");
-    debug_prints(data, HEX);
-    debug_prints(" to register 0x");
-    debug_printlns(reg, HEX);
-
     uint8_t counter;
     uint16_t twoBytes;
 
@@ -804,8 +754,6 @@ uint8_t  LSM303C::I2C_ByteWrite(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
     if (Wire.write(reg)) {
         ret = Wire.write(data);
         if (ret) {
-            debug_print("Wrote: 0x");
-            debug_printlns(data, HEX);
             switch (Wire.endTransmission()) {
                 case 0:
                     ret = IMU_SUCCESS;
@@ -830,40 +778,25 @@ SparkFunIMU_status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint
                                uint8_t &data)
 {
     SparkFunIMU_status_t ret = IMU_GENERIC_ERROR;
-    debug_print("Reading from I2C address: 0x");
-    debug_prints(slaveAddress, HEX);
-    debug_prints(", register 0x");
-    debug_printlns(reg, HEX);
     Wire.beginTransmission(slaveAddress); // Initialize the Tx buffer
     if (Wire.write(reg)) { // Put slave register address in Tx buff
         if (Wire.endTransmission(false)) { // Send Tx, send restart to keep alive
-            debug_println("Error: I2C buffer didn't get sent!");
-            debug_print("Slave address: 0x");
-            debug_printlns(slaveAddress, HEX);
-            debug_print("Register: 0x");
-            debug_printlns(reg, HEX);
-
             ret = IMU_HW_ERROR;
         } else if (Wire.requestFrom(slaveAddress, 1)) {
             data = Wire.read();
-            debug_print("Read: 0x");
-            debug_printlns(data, HEX);
             ret = IMU_SUCCESS;
         } else {
-            debug_println("IMU_HW_ERROR");
             ret = IMU_HW_ERROR;
         }
     } else {
-        debug_println("Error: couldn't send slave register address");
+        ret = IMU_GENERIC_ERROR;
     }
     return ret;
 }
 
 SparkFunIMU_status_t LSM303C::ACC_Status_Flags(uint8_t &val)
 {
-    debug_println("Getting accel status");
     if (ACC_ReadReg(ACC_STATUS, val)) {
-        debug_println(AERROR);
         return IMU_HW_ERROR;
     }
 
