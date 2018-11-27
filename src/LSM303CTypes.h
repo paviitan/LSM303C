@@ -26,7 +26,7 @@ typedef enum {
     MAG_INT_SRC    = 0x31,
     MAG_INT_THS_L  = 0x32,
     MAG_INT_THS_H  = 0x33
-} MAG_REG_t;
+} LSM303C_MAG_REG_t;
 
 /////////////////////////////////////
 // LSM303C Accelerometer Registers //
@@ -69,44 +69,44 @@ typedef enum {
     ACC_YH_REFERENCE = 0x3D,
     ACC_ZL_REFERENCE = 0x3E,
     ACC_ZH_REFERENCE = 0x3F
-} ACC_REG_t;
+} LSM303C_ACC_REG_t;
 
 typedef enum {
     MAG_TEMP_EN_DISABLE = 0x00,
     MAG_TEMP_EN_ENABLE  = 0x80
-} MAG_TEMP_EN_t;
+} LSM303C_MAG_TEMP_EN_t;
 
 typedef enum {
     MAG_XYZDA_NO  = 0x00,
     MAG_XYZDA_YES = 0x08
-} MAG_XYZDA_t;
+} LSM303C_MAG_XYZDA_t;
 
 typedef enum {
     ACC_I2C_ADDR = 0x1D,
     MAG_I2C_ADDR = 0x1E
-} I2C_ADDR_t;
+} LSM303C_I2C_ADDR_t;
 
 typedef struct {
     int16_t xAxis;
     int16_t yAxis;
     int16_t zAxis;
-} AxesRaw_t;
+} LSM303C_AxesRaw_t;
 
 typedef enum {
     MODE_SPI,
     MODE_I2C,
-} InterfaceMode_t;
+} LSM303C_InterfaceMode_t;
 
 typedef enum {
     MAG,
     ACC
-} CHIP_t;
+} LSM303C_CHIP_t;
 
 typedef enum {
     xAxis,
     yAxis,
     zAxis
-} AXIS_t;
+} LSM303C_AXIS_t;
 
 typedef enum {
     MAG_DO_0_625_Hz = 0x00,
@@ -117,51 +117,51 @@ typedef enum {
     MAG_DO_20_Hz    = 0x14,
     MAG_DO_40_Hz    = 0x18,
     MAG_DO_80_Hz    = 0x1C
-} MAG_DO_t;
+} LSM303C_MAG_DO_t;
 
 typedef enum {
     MAG_FS_4_Ga   =  0x00,
     MAG_FS_8_Ga   =  0x20,
     MAG_FS_12_Ga  =  0x40,
     MAG_FS_16_Ga  =  0x60
-} MAG_FS_t;
+} LSM303C_MAG_FS_t;
 
 typedef enum {
     MAG_BDU_DISABLE = 0x00,
     MAG_BDU_ENABLE  = 0x40
-} MAG_BDU_t;
+} LSM303C_MAG_BDU_t;
 
 typedef enum {
     MAG_OMXY_LOW_POWER              = 0x00,
     MAG_OMXY_MEDIUM_PERFORMANCE     = 0x20,
     MAG_OMXY_HIGH_PERFORMANCE       = 0x40,
     MAG_OMXY_ULTRA_HIGH_PERFORMANCE = 0x60
-} MAG_OMXY_t;
+} LSM303C_MAG_OMXY_t;
 
 typedef enum {
     MAG_OMZ_LOW_PW                  =  0x00,
     MAG_OMZ_MEDIUM_PERFORMANCE      =  0x04,
     MAG_OMZ_HIGH_PERFORMANCE        =  0x08,
     MAG_OMZ_ULTRA_HIGH_PERFORMANCE  =  0x0C
-} MAG_OMZ_t;
+} LSM303C_MAG_OMZ_t;
 
 typedef enum {
     MAG_MD_CONTINUOUS   = 0x00,
     MAG_MD_SINGLE       = 0x01,
     MAG_MD_POWER_DOWN_1 = 0x02,
     MAG_MD_POWER_DOWN_2 = 0x03
-} MAG_MD_t;
+} LSM303C_MAG_MD_t;
 
 typedef enum {
     ACC_FS_2g = 0x00,
     ACC_FS_4g = 0x20,
     ACC_FS_8g = 0x30
-} ACC_FS_t;
+} LSM303C_ACC_FS_t;
 
 typedef enum {
     ACC_BDU_DISABLE = 0x00,
     ACC_BDU_ENABLE  = 0x08
-} ACC_BDU_t;
+} LSM303C_ACC_BDU_t;
 
 typedef enum {
     ACC_ODR_POWER_DOWN  = 0x00,
@@ -172,14 +172,14 @@ typedef enum {
     ACC_ODR_400_Hz      = 0x50,
     ACC_ODR_800_Hz      = 0x60,
     ACC_ODR_MASK        = 0x60
-} ACC_ODR_t;
+} LSM303C_ACC_ODR_t;
 
 typedef enum {
     ACC_DISABLE_ALL = 0x00,
     ACC_X_ENABLE    = 0x01,
     ACC_Y_ENABLE    = 0x02,
     ACC_Z_ENABLE    = 0x04
-} ACC_AXIS_EN_t;
+} LSM303C_ACC_AXIS_EN_t;
 
 typedef enum {
     ACC_X_NEW_DATA_AVAILABLE    = 0x01,
@@ -190,6 +190,6 @@ typedef enum {
     ACC_Y_OVERRUN               = 0x20,
     ACC_Z_OVERRUN               = 0x40,
     ACC_ZYX_OVERRUN             = 0x80
-} ACC_STATUS_FLAGS_t;
+} LSM303C_ACC_STATUS_FLAGS_t;
 
 #endif

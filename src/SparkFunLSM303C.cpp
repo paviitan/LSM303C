@@ -31,9 +31,9 @@ status_t LSM303C::begin()
         );
 }
 
-status_t LSM303C::begin(InterfaceMode_t im, MAG_DO_t modr, MAG_FS_t mfs,
-                        MAG_BDU_t mbu, MAG_OMXY_t mxyodr, MAG_OMZ_t mzodr, MAG_MD_t mm,
-                        ACC_FS_t afs, ACC_BDU_t abu, uint8_t aea, ACC_ODR_t aodr)
+status_t LSM303C::begin(LSM303C_InterfaceMode_t im, LSM303C_MAG_DO_t modr, LSM303C_MAG_FS_t mfs,
+                        LSM303C_MAG_BDU_t mbu, LSM303C_MAG_OMXY_t mxyodr, LSM303C_MAG_OMZ_t mzodr, LSM303C_MAG_MD_t mm,
+                        LSM303C_ACC_FS_t afs, LSM303C_ACC_BDU_t abu, uint8_t aea, LSM303C_ACC_ODR_t aodr)
 {
     uint8_t successes = 0;
     // Select I2C or SPI
@@ -245,7 +245,7 @@ float LSM303C::readTempF()
 ////////////////////////////////////////////////////////////////////////////////
 ////// Protected methods
 
-float LSM303C::readAccel(AXIS_t dir)
+float LSM303C::readAccel(LSM303C_AXIS_t dir)
 {
     uint8_t flag_ACC_STATUS_FLAGS;
     status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
@@ -282,9 +282,9 @@ float LSM303C::readAccel(AXIS_t dir)
     return NAN;
 }
 
-float LSM303C::readMag(AXIS_t dir)
+float LSM303C::readMag(LSM303C_AXIS_t dir)
 {
-    MAG_XYZDA_t flag_MAG_XYZDA;
+    LSM303C_MAG_XYZDA_t flag_MAG_XYZDA;
     status_t response = MAG_XYZ_AxDataAvailable(flag_MAG_XYZDA);
 
     if (response != IMU_SUCCESS) {
@@ -317,7 +317,7 @@ float LSM303C::readMag(AXIS_t dir)
     return NAN;
 }
 
-status_t LSM303C::MAG_GetMagRaw(AxesRaw_t &buff)
+status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 {
     debug_print(EMPTY);
     uint8_t valueL;
@@ -358,7 +358,7 @@ status_t LSM303C::MAG_GetMagRaw(AxesRaw_t &buff)
 }
 
 // Methods required to get device up and running
-status_t LSM303C::MAG_SetODR(MAG_DO_t val)
+status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -379,7 +379,7 @@ status_t LSM303C::MAG_SetODR(MAG_DO_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_SetFullScale(MAG_FS_t val)
+status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -398,7 +398,7 @@ status_t LSM303C::MAG_SetFullScale(MAG_FS_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_BlockDataUpdate(MAG_BDU_t val)
+status_t LSM303C::MAG_BlockDataUpdate(LSM303C_MAG_BDU_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -418,18 +418,18 @@ status_t LSM303C::MAG_BlockDataUpdate(MAG_BDU_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_XYZ_AxDataAvailable(MAG_XYZDA_t &value)
+status_t LSM303C::MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &value)
 {
     if (MAG_ReadReg(MAG_STATUS_REG, (uint8_t &)value)) {
         return IMU_HW_ERROR;
     }
 
-    value = (MAG_XYZDA_t)((int8_t)value & (int8_t)MAG_XYZDA_YES);
+    value = (LSM303C_MAG_XYZDA_t)((int8_t)value & (int8_t)MAG_XYZDA_YES);
 
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_XY_AxOperativeMode(MAG_OMXY_t val)
+status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
 {
     debug_print(EMPTY);
 
@@ -449,7 +449,7 @@ status_t LSM303C::MAG_XY_AxOperativeMode(MAG_OMXY_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_Z_AxOperativeMode(MAG_OMZ_t val)
+status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -468,7 +468,7 @@ status_t LSM303C::MAG_Z_AxOperativeMode(MAG_OMZ_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_SetMode(MAG_MD_t val)
+status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -489,7 +489,7 @@ status_t LSM303C::MAG_SetMode(MAG_MD_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_SetFullScale(ACC_FS_t val)
+status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -510,7 +510,7 @@ status_t LSM303C::ACC_SetFullScale(ACC_FS_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_BlockDataUpdate(ACC_BDU_t val)
+status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -549,7 +549,7 @@ status_t LSM303C::ACC_EnableAxis(uint8_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_SetODR(ACC_ODR_t val)
+status_t LSM303C::ACC_SetODR(LSM303C_ACC_ODR_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -568,7 +568,7 @@ status_t LSM303C::ACC_SetODR(ACC_ODR_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_TemperatureEN(MAG_TEMP_EN_t val)
+status_t LSM303C::MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t val)
 {
     uint8_t value;
 
@@ -586,7 +586,7 @@ status_t LSM303C::MAG_TemperatureEN(MAG_TEMP_EN_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_ReadReg(MAG_REG_t reg, uint8_t &data)
+status_t LSM303C::MAG_ReadReg(LSM303C_MAG_REG_t reg, uint8_t &data)
 {
     debug_print("Reading register 0x");
     debug_printlns(reg, HEX);
@@ -604,7 +604,7 @@ status_t LSM303C::MAG_ReadReg(MAG_REG_t reg, uint8_t &data)
     return ret;
 }
 
-uint8_t  LSM303C::MAG_WriteReg(MAG_REG_t reg, uint8_t data)
+uint8_t  LSM303C::MAG_WriteReg(LSM303C_MAG_REG_t reg, uint8_t data)
 {
     debug_print(EMPTY);
     uint8_t ret;
@@ -620,7 +620,7 @@ uint8_t  LSM303C::MAG_WriteReg(MAG_REG_t reg, uint8_t data)
     return ret;
 }
 
-status_t LSM303C::ACC_ReadReg(ACC_REG_t reg, uint8_t &data)
+status_t LSM303C::ACC_ReadReg(LSM303C_ACC_REG_t reg, uint8_t &data)
 {
     debug_print("Reading address 0x");
     debug_printlns(reg, HEX);
@@ -642,7 +642,7 @@ status_t LSM303C::ACC_ReadReg(ACC_REG_t reg, uint8_t &data)
 
 
 
-uint8_t  LSM303C::ACC_WriteReg(ACC_REG_t reg, uint8_t data)
+uint8_t  LSM303C::ACC_WriteReg(LSM303C_ACC_REG_t reg, uint8_t data)
 {
     debug_print(EMPTY);
     uint8_t ret;
@@ -659,7 +659,7 @@ uint8_t  LSM303C::ACC_WriteReg(ACC_REG_t reg, uint8_t data)
 }
 
 // This function uses bit manibulation for higher speed & smaller code
-uint8_t LSM303C::SPI_ReadByte(CHIP_t chip, uint8_t data)
+uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 {
     debug_print("Reading register 0x");
     debug_printlns(data, HEX);
@@ -731,7 +731,7 @@ uint8_t LSM303C::SPI_ReadByte(CHIP_t chip, uint8_t data)
 
 
 // This function uses bit manibulation for higher speed & smaller code
-status_t LSM303C::SPI_WriteByte(CHIP_t chip, uint8_t reg, uint8_t data)
+status_t LSM303C::SPI_WriteByte(LSM303C_CHIP_t chip, uint8_t reg, uint8_t data)
 {
     debug_print("Writing 0x");
     debug_prints(data, HEX);
@@ -795,7 +795,7 @@ status_t LSM303C::SPI_WriteByte(CHIP_t chip, uint8_t reg, uint8_t data)
 
 
 
-uint8_t  LSM303C::I2C_ByteWrite(I2C_ADDR_t slaveAddress, uint8_t reg,
+uint8_t  LSM303C::I2C_ByteWrite(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
                                 uint8_t data)
 {
     uint8_t ret = IMU_GENERIC_ERROR;
@@ -826,7 +826,7 @@ uint8_t  LSM303C::I2C_ByteWrite(I2C_ADDR_t slaveAddress, uint8_t reg,
     return ret;
 }
 
-status_t LSM303C::I2C_ByteRead(I2C_ADDR_t slaveAddress, uint8_t reg,
+status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
                                uint8_t &data)
 {
     status_t ret = IMU_GENERIC_ERROR;
@@ -870,7 +870,7 @@ status_t LSM303C::ACC_Status_Flags(uint8_t &val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_GetAccRaw(AxesRaw_t &buff)
+status_t LSM303C::ACC_GetAccRaw(LSM303C_AxesRaw_t &buff)
 {
     uint8_t valueL;
     uint8_t valueH;
