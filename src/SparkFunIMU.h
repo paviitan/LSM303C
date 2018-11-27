@@ -4,7 +4,7 @@
 #ifndef __SPARKFUNIMU_H__
 #define __SPARKFUNIMU_H__
 
-#include "Arduino.h"
+#include "mbed.h"
 
 // Return values
 typedef enum {

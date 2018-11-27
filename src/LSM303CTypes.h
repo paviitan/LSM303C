@@ -2,6 +2,7 @@
 // Heavily based on code from ST
 #ifndef __LSM303C_TYPES_H__
 #define __LSM303C_TYPES_H__
+#include "mbed.h"
 
 ////////////////////////////////////
 // LSM303C Magnetometer Registers //
@@ -82,8 +83,8 @@ typedef enum {
 } LSM303C_MAG_XYZDA_t;
 
 typedef enum {
-    ACC_I2C_ADDR = 0x1D,
-    MAG_I2C_ADDR = 0x1E
+    ACC_I2C_ADDR = 0x1D << 1,
+    MAG_I2C_ADDR = 0x1E << 1
 } LSM303C_I2C_ADDR_t;
 
 typedef struct {

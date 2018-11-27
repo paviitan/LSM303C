@@ -1,7 +1,10 @@
 #include "SparkFunLSM303C.h"
-#include "stdint.h"
 
 // Public methods
+LSM303C::LSM303C(I2C &i2c) : _i2c(i2c)
+{
+}
+
 SparkFunIMU_status_t LSM303C::begin()
 {
     return
@@ -31,30 +34,15 @@ SparkFunIMU_status_t LSM303C::begin()
 }
 
 SparkFunIMU_status_t LSM303C::begin(LSM303C_InterfaceMode_t im, LSM303C_MAG_DO_t modr, LSM303C_MAG_FS_t mfs,
-                        LSM303C_MAG_BDU_t mbu, LSM303C_MAG_OMXY_t mxyodr, LSM303C_MAG_OMZ_t mzodr, LSM303C_MAG_MD_t mm,
-                        LSM303C_ACC_FS_t afs, LSM303C_ACC_BDU_t abu, uint8_t aea, LSM303C_ACC_ODR_t aodr)
+                                    LSM303C_MAG_BDU_t mbu, LSM303C_MAG_OMXY_t mxyodr, LSM303C_MAG_OMZ_t mzodr, LSM303C_MAG_MD_t mm,
+                                    LSM303C_ACC_FS_t afs, LSM303C_ACC_BDU_t abu, uint8_t aea, LSM303C_ACC_ODR_t aodr)
 {
     uint8_t successes = 0;
     // Select I2C or SPI
     interfaceMode = im;
 
     if (interfaceMode == MODE_SPI) {
-        // Setup pins for SPI
-        // CS & CLK must be outputs DDRxn = 1
-        bitSet(DIR_REG, CSBIT_MAG);
-        bitSet(DIR_REG, CSBIT_XL);
-        bitSet(DIR_REG, CLKBIT);
-        // Deselect SPI chips
-        bitSet(CSPORT_MAG, CSBIT_MAG);
-        bitSet(CSPORT_XL, CSBIT_XL);
-        // Clock polarity (CPOL) = 1
-        bitSet(CLKPORT, CLKBIT);
-        // SPI Serial Interface Mode (SIM) bits must be set
-        SPI_WriteByte(ACC, ACC_CTRL4, 0b111);
-        SPI_WriteByte(MAG, MAG_CTRL_REG3, _BV(2));
-    } else {
-        Wire.begin();
-        Wire.setClock(400000L);
+        return IMU_NOT_SUPPORTED;
     }
     ////////// Initialize Magnetometer //////////
     // Initialize magnetometer output data rate
@@ -299,8 +287,8 @@ float LSM303C::readMag(LSM303C_AXIS_t dir)
 
 SparkFunIMU_status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 {
-	uint8_t valueL;
-	uint8_t valueH;
+    uint8_t valueL;
+    uint8_t valueH;
 
     if (MAG_ReadReg(MAG_OUTX_L, valueL)) {
         return IMU_HW_ERROR;
@@ -618,67 +606,8 @@ uint8_t  LSM303C::ACC_WriteReg(LSM303C_ACC_REG_t reg, uint8_t data)
 // This function uses bit manibulation for higher speed & smaller code
 uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 {
-    uint8_t counter;
-
-    // Set the read/write bit (bit 7) to do a read
-    data |= _BV(7);
-
-    // Set data pin to output
-    bitSet(DIR_REG, DATABIT);
-
-    noInterrupts();
-
-    // Select the chip & deselect the other
-    switch (chip) {
-        case MAG:
-            bitClear(CSPORT_MAG, CSBIT_MAG);
-            bitSet(CSPORT_XL, CSBIT_XL);
-            break;
-        case ACC:
-            bitClear(CSPORT_XL, CSBIT_XL);
-            bitSet(CSPORT_MAG, CSBIT_MAG);
-            break;
-    }
-
-    // Shift out 8-bit address
-    for (counter = 8; counter; counter--) {
-        bitWrite(DATAPORTO, DATABIT, data & 0x80);
-        // Data is setup, so drop clock edge
-        bitClear(CLKPORT, CLKBIT);
-        bitSet(CLKPORT, CLKBIT);
-        // Shift off sent bit
-        data <<= 1;
-    }
-
-    // Switch data pin to input (0 = INPUT)
-    bitClear(DIR_REG, DATABIT);
-
-    // Shift in register data from address
-    for (counter = 8; counter; counter--) {
-        // Shift data to the left.  Remains 0 after first shift
-        data <<= 1;
-
-        bitClear(CLKPORT, CLKBIT);
-        // Sample on rising egde
-        bitSet(CLKPORT, CLKBIT);
-        if (bitRead(DATAPORTI, DATABIT)) {
-            data |= 0x01;
-        }
-    }
-
-    // Unselect chip
-    switch (chip) {
-        case MAG:
-            bitSet(CSPORT_MAG, CSBIT_MAG);
-            break;
-        case ACC:
-            bitSet(CSPORT_XL, CSBIT_XL);
-            break;
-    }
-
-    interrupts();
-
-    return (data);
+    uint8_t ret = IMU_NOT_SUPPORTED;
+    return ret;
 }
 
 
@@ -688,58 +617,8 @@ uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 // This function uses bit manibulation for higher speed & smaller code
 SparkFunIMU_status_t LSM303C::SPI_WriteByte(LSM303C_CHIP_t chip, uint8_t reg, uint8_t data)
 {
-    uint8_t counter;
-    uint16_t twoBytes;
-
-    // Clear the read/write bit (bit 7) to do a write
-    reg &= ~_BV(7);
-    twoBytes = reg << 8 | data;
-
-    // Set data pin to output
-    bitSet(DIR_REG, DATABIT);
-
-    noInterrupts();
-
-    // Select the chip & deselect the other
-    switch (chip) {
-        case MAG:
-            bitClear(CSPORT_MAG, CSBIT_MAG);
-            bitSet(CSPORT_XL, CSBIT_XL);
-            break;
-        case ACC:
-            bitClear(CSPORT_XL, CSBIT_XL);
-            bitSet(CSPORT_MAG, CSBIT_MAG);
-            break;
-    }
-
-    // Shift out 8-bit address & 8-bit data
-    for (counter = 16; counter; counter--) {
-        bitWrite(DATAPORTO, DATABIT, twoBytes & 0x8000);
-
-        // Data is setup, so drop clock edge
-        bitClear(CLKPORT, CLKBIT);
-        bitSet(CLKPORT, CLKBIT);
-        // Shift off sent bit
-        twoBytes <<= 1;
-    }
-
-    // Unselect chip
-    switch (chip) {
-        case MAG:
-            bitSet(CSPORT_MAG, CSBIT_MAG);
-            break;
-        case ACC:
-            bitSet(CSPORT_XL, CSBIT_XL);
-            break;
-    }
-
-    interrupts();
-
-    // Set data pin to input
-    bitClear(DIR_REG, DATABIT);
-
-    // Is there a way to verify true success?
-    return IMU_SUCCESS;
+    SparkFunIMU_status_t ret = IMU_NOT_SUPPORTED;
+    return ret;
 }
 
 
@@ -749,47 +628,32 @@ uint8_t  LSM303C::I2C_ByteWrite(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
                                 uint8_t data)
 {
     uint8_t ret = IMU_GENERIC_ERROR;
-    Wire.beginTransmission(slaveAddress);  // Initialize the Tx buffer
-    // returns num bytes written
-    if (Wire.write(reg)) {
-        ret = Wire.write(data);
-        if (ret) {
-            switch (Wire.endTransmission()) {
-                case 0:
-                    ret = IMU_SUCCESS;
-                    break;
-                case 1: // Data too long to fit in transmit buffer
-                case 2: // Received NACK on transmit of address
-                case 3: // Received NACK on transmit of data
-                case 4: // Other Error
-                default:
-                    ret = IMU_HW_ERROR;
-            }
-        } else {
-            ret = IMU_HW_ERROR;
-        }
-    } else {
+    char cmd[2];
+    cmd[0] = reg;
+    cmd[1] = data;
+    if (_i2c.write(slaveAddress, cmd, 2)) {
         ret = IMU_HW_ERROR;
+    } else {
+        ret = IMU_SUCCESS;
     }
     return ret;
 }
 
 SparkFunIMU_status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
-                               uint8_t &data)
+                                           uint8_t &data)
 {
     SparkFunIMU_status_t ret = IMU_GENERIC_ERROR;
-    Wire.beginTransmission(slaveAddress); // Initialize the Tx buffer
-    if (Wire.write(reg)) { // Put slave register address in Tx buff
-        if (Wire.endTransmission(false)) { // Send Tx, send restart to keep alive
-            ret = IMU_HW_ERROR;
-        } else if (Wire.requestFrom(slaveAddress, 1)) {
-            data = Wire.read();
-            ret = IMU_SUCCESS;
-        } else {
-            ret = IMU_HW_ERROR;
-        }
+    char dataByte[1];
+    char cmd[1];
+    cmd[0] = reg;
+    if (_i2c.write(slaveAddress, cmd, 1, true)) {
+        ret = IMU_HW_ERROR;
+    }
+    if (_i2c.read(slaveAddress, dataByte, 1)) {
+        ret = IMU_HW_ERROR;
     } else {
-        ret = IMU_GENERIC_ERROR;
+        data = dataByte[0];
+        ret = IMU_SUCCESS;
     }
     return ret;
 }
