@@ -14,16 +14,16 @@ typedef enum {
     IMU_GENERIC_ERROR,
     IMU_OUT_OF_BOUNDS,
     //...
-} status_t;
+} SparkFunIMU_status_t;
 
 class SparkFunIMU {
 protected:
-    status_t driverStatus; // Stores status of last operation
+    SparkFunIMU_status_t driverStatus; // Stores status of last operation
 
 public:
     // begin() returns up to 16 who_am_i bits.  If there is only one serial
     //   device the MSBs will be zero
-    virtual status_t begin(void) = 0; // Must be defined in derived classes
+    virtual SparkFunIMU_status_t begin(void) = 0; // Must be defined in derived classes
 
     virtual float readGyroX()
     {
@@ -70,7 +70,7 @@ public:
         return NAN;
     }
 
-    status_t getStatus()
+    SparkFunIMU_status_t getStatus()
     {
         return driverStatus;
     }

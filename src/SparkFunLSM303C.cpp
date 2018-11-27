@@ -2,7 +2,7 @@
 #include "stdint.h"
 
 // Public methods
-status_t LSM303C::begin()
+SparkFunIMU_status_t LSM303C::begin()
 {
     debug_println(EMPTY);
     return
@@ -31,7 +31,7 @@ status_t LSM303C::begin()
         );
 }
 
-status_t LSM303C::begin(LSM303C_InterfaceMode_t im, LSM303C_MAG_DO_t modr, LSM303C_MAG_FS_t mfs,
+SparkFunIMU_status_t LSM303C::begin(LSM303C_InterfaceMode_t im, LSM303C_MAG_DO_t modr, LSM303C_MAG_FS_t mfs,
                         LSM303C_MAG_BDU_t mbu, LSM303C_MAG_OMXY_t mxyodr, LSM303C_MAG_OMZ_t mzodr, LSM303C_MAG_MD_t mm,
                         LSM303C_ACC_FS_t afs, LSM303C_ACC_BDU_t abu, uint8_t aea, LSM303C_ACC_ODR_t aodr)
 {
@@ -103,7 +103,7 @@ float LSM303C::readMagZ()
 float LSM303C::readAccelX()
 {
     uint8_t flag_ACC_STATUS_FLAGS;
-    status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
+    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
         debug_println(AERROR);
@@ -139,7 +139,7 @@ float LSM303C::readAccelX()
 float LSM303C::readAccelY()
 {
     uint8_t flag_ACC_STATUS_FLAGS;
-    status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
+    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
         debug_println(AERROR);
@@ -175,7 +175,7 @@ float LSM303C::readAccelY()
 float LSM303C::readAccelZ()
 {
     uint8_t flag_ACC_STATUS_FLAGS;
-    status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
+    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
         debug_println(AERROR);
@@ -248,7 +248,7 @@ float LSM303C::readTempF()
 float LSM303C::readAccel(LSM303C_AXIS_t dir)
 {
     uint8_t flag_ACC_STATUS_FLAGS;
-    status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
+    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
 
     if (response != IMU_SUCCESS) {
         debug_println(AERROR);
@@ -285,7 +285,7 @@ float LSM303C::readAccel(LSM303C_AXIS_t dir)
 float LSM303C::readMag(LSM303C_AXIS_t dir)
 {
     LSM303C_MAG_XYZDA_t flag_MAG_XYZDA;
-    status_t response = MAG_XYZ_AxDataAvailable(flag_MAG_XYZDA);
+    SparkFunIMU_status_t response = MAG_XYZ_AxDataAvailable(flag_MAG_XYZDA);
 
     if (response != IMU_SUCCESS) {
         debug_println(MERROR);
@@ -317,7 +317,7 @@ float LSM303C::readMag(LSM303C_AXIS_t dir)
     return NAN;
 }
 
-status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
+SparkFunIMU_status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 {
     debug_print(EMPTY);
     uint8_t valueL;
@@ -358,7 +358,7 @@ status_t LSM303C::MAG_GetMagRaw(LSM303C_AxesRaw_t &buff)
 }
 
 // Methods required to get device up and running
-status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
+SparkFunIMU_status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -379,7 +379,7 @@ status_t LSM303C::MAG_SetODR(LSM303C_MAG_DO_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
+SparkFunIMU_status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -398,7 +398,7 @@ status_t LSM303C::MAG_SetFullScale(LSM303C_MAG_FS_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_BlockDataUpdate(LSM303C_MAG_BDU_t val)
+SparkFunIMU_status_t LSM303C::MAG_BlockDataUpdate(LSM303C_MAG_BDU_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -418,7 +418,7 @@ status_t LSM303C::MAG_BlockDataUpdate(LSM303C_MAG_BDU_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &value)
+SparkFunIMU_status_t LSM303C::MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &value)
 {
     if (MAG_ReadReg(MAG_STATUS_REG, (uint8_t &)value)) {
         return IMU_HW_ERROR;
@@ -429,7 +429,7 @@ status_t LSM303C::MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &value)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
+SparkFunIMU_status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
 {
     debug_print(EMPTY);
 
@@ -449,7 +449,7 @@ status_t LSM303C::MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
+SparkFunIMU_status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -468,7 +468,7 @@ status_t LSM303C::MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
+SparkFunIMU_status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -489,7 +489,7 @@ status_t LSM303C::MAG_SetMode(LSM303C_MAG_MD_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
+SparkFunIMU_status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -510,7 +510,7 @@ status_t LSM303C::ACC_SetFullScale(LSM303C_ACC_FS_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
+SparkFunIMU_status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -529,7 +529,7 @@ status_t LSM303C::ACC_BlockDataUpdate(LSM303C_ACC_BDU_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_EnableAxis(uint8_t val)
+SparkFunIMU_status_t LSM303C::ACC_EnableAxis(uint8_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -549,7 +549,7 @@ status_t LSM303C::ACC_EnableAxis(uint8_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_SetODR(LSM303C_ACC_ODR_t val)
+SparkFunIMU_status_t LSM303C::ACC_SetODR(LSM303C_ACC_ODR_t val)
 {
     debug_print(EMPTY);
     uint8_t value;
@@ -568,7 +568,7 @@ status_t LSM303C::ACC_SetODR(LSM303C_ACC_ODR_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t val)
+SparkFunIMU_status_t LSM303C::MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t val)
 {
     uint8_t value;
 
@@ -586,11 +586,11 @@ status_t LSM303C::MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::MAG_ReadReg(LSM303C_MAG_REG_t reg, uint8_t &data)
+SparkFunIMU_status_t LSM303C::MAG_ReadReg(LSM303C_MAG_REG_t reg, uint8_t &data)
 {
     debug_print("Reading register 0x");
     debug_printlns(reg, HEX);
-    status_t ret = IMU_GENERIC_ERROR;
+    SparkFunIMU_status_t ret = IMU_GENERIC_ERROR;
 
     if (interfaceMode == MODE_I2C) {
         ret = I2C_ByteRead(MAG_I2C_ADDR, reg, data);
@@ -620,11 +620,11 @@ uint8_t  LSM303C::MAG_WriteReg(LSM303C_MAG_REG_t reg, uint8_t data)
     return ret;
 }
 
-status_t LSM303C::ACC_ReadReg(LSM303C_ACC_REG_t reg, uint8_t &data)
+SparkFunIMU_status_t LSM303C::ACC_ReadReg(LSM303C_ACC_REG_t reg, uint8_t &data)
 {
     debug_print("Reading address 0x");
     debug_printlns(reg, HEX);
-    status_t ret;
+    SparkFunIMU_status_t ret;
 
     if (interfaceMode == MODE_I2C) {
         ret = I2C_ByteRead(ACC_I2C_ADDR, reg, data);
@@ -731,7 +731,7 @@ uint8_t LSM303C::SPI_ReadByte(LSM303C_CHIP_t chip, uint8_t data)
 
 
 // This function uses bit manibulation for higher speed & smaller code
-status_t LSM303C::SPI_WriteByte(LSM303C_CHIP_t chip, uint8_t reg, uint8_t data)
+SparkFunIMU_status_t LSM303C::SPI_WriteByte(LSM303C_CHIP_t chip, uint8_t reg, uint8_t data)
 {
     debug_print("Writing 0x");
     debug_prints(data, HEX);
@@ -826,10 +826,10 @@ uint8_t  LSM303C::I2C_ByteWrite(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
     return ret;
 }
 
-status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
+SparkFunIMU_status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
                                uint8_t &data)
 {
-    status_t ret = IMU_GENERIC_ERROR;
+    SparkFunIMU_status_t ret = IMU_GENERIC_ERROR;
     debug_print("Reading from I2C address: 0x");
     debug_prints(slaveAddress, HEX);
     debug_prints(", register 0x");
@@ -859,7 +859,7 @@ status_t LSM303C::I2C_ByteRead(LSM303C_I2C_ADDR_t slaveAddress, uint8_t reg,
     return ret;
 }
 
-status_t LSM303C::ACC_Status_Flags(uint8_t &val)
+SparkFunIMU_status_t LSM303C::ACC_Status_Flags(uint8_t &val)
 {
     debug_println("Getting accel status");
     if (ACC_ReadReg(ACC_STATUS, val)) {
@@ -870,7 +870,7 @@ status_t LSM303C::ACC_Status_Flags(uint8_t &val)
     return IMU_SUCCESS;
 }
 
-status_t LSM303C::ACC_GetAccRaw(LSM303C_AxesRaw_t &buff)
+SparkFunIMU_status_t LSM303C::ACC_GetAccRaw(LSM303C_AxesRaw_t &buff)
 {
     uint8_t valueL;
     uint8_t valueH;

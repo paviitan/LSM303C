@@ -38,9 +38,9 @@ class LSM303C : public SparkFunIMU {
 public:
     // These are the only methods are the only methods the user can use w/o mods
     ~LSM303C()  =  default;
-    status_t begin(void);
+    SparkFunIMU_status_t begin(void);
     // Begin contains hardware specific code (Pro Mini)
-    status_t begin(LSM303C_InterfaceMode_t, LSM303C_MAG_DO_t, LSM303C_MAG_FS_t, LSM303C_MAG_BDU_t, LSM303C_MAG_OMXY_t,
+    SparkFunIMU_status_t begin(LSM303C_InterfaceMode_t, LSM303C_MAG_DO_t, LSM303C_MAG_FS_t, LSM303C_MAG_BDU_t, LSM303C_MAG_OMXY_t,
                    LSM303C_MAG_OMZ_t, LSM303C_MAG_MD_t, LSM303C_ACC_FS_t, LSM303C_ACC_BDU_t, uint8_t, LSM303C_ACC_ODR_t);
     float readAccelX(void);
     float readAccelY(void);
@@ -62,34 +62,34 @@ protected:
 
     // Hardware abstraction functions (Pro Mini)
     uint8_t  SPI_ReadByte(LSM303C_CHIP_t, uint8_t);
-    status_t SPI_WriteByte(LSM303C_CHIP_t, uint8_t, uint8_t);
+    SparkFunIMU_status_t SPI_WriteByte(LSM303C_CHIP_t, uint8_t, uint8_t);
     uint8_t  I2C_ByteWrite(LSM303C_I2C_ADDR_t, uint8_t, uint8_t);
-    status_t I2C_ByteRead(LSM303C_I2C_ADDR_t, uint8_t, uint8_t &);
+    SparkFunIMU_status_t I2C_ByteRead(LSM303C_I2C_ADDR_t, uint8_t, uint8_t &);
 
     // Methods required to get device up and running
-    status_t MAG_SetODR(LSM303C_MAG_DO_t);
-    status_t MAG_SetFullScale(LSM303C_MAG_FS_t);
-    status_t MAG_BlockDataUpdate(LSM303C_MAG_BDU_t);
-    status_t MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t);
-    status_t MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t);
-    status_t MAG_SetMode(LSM303C_MAG_MD_t);
-    status_t ACC_SetFullScale(LSM303C_ACC_FS_t);
-    status_t ACC_BlockDataUpdate(LSM303C_ACC_BDU_t);
-    status_t ACC_EnableAxis(uint8_t);
-    status_t ACC_SetODR(LSM303C_ACC_ODR_t);
+    SparkFunIMU_status_t MAG_SetODR(LSM303C_MAG_DO_t);
+    SparkFunIMU_status_t MAG_SetFullScale(LSM303C_MAG_FS_t);
+    SparkFunIMU_status_t MAG_BlockDataUpdate(LSM303C_MAG_BDU_t);
+    SparkFunIMU_status_t MAG_XY_AxOperativeMode(LSM303C_MAG_OMXY_t);
+    SparkFunIMU_status_t MAG_Z_AxOperativeMode(LSM303C_MAG_OMZ_t);
+    SparkFunIMU_status_t MAG_SetMode(LSM303C_MAG_MD_t);
+    SparkFunIMU_status_t ACC_SetFullScale(LSM303C_ACC_FS_t);
+    SparkFunIMU_status_t ACC_BlockDataUpdate(LSM303C_ACC_BDU_t);
+    SparkFunIMU_status_t ACC_EnableAxis(uint8_t);
+    SparkFunIMU_status_t ACC_SetODR(LSM303C_ACC_ODR_t);
 
-    status_t ACC_Status_Flags(uint8_t &);
-    status_t ACC_GetAccRaw(LSM303C_AxesRaw_t &);
+    SparkFunIMU_status_t ACC_Status_Flags(uint8_t &);
+    SparkFunIMU_status_t ACC_GetAccRaw(LSM303C_AxesRaw_t &);
     float    readAccel(LSM303C_AXIS_t); // Reads the accelerometer data from IC
 
-    status_t MAG_GetMagRaw(LSM303C_AxesRaw_t &);
-    status_t MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t);
-    status_t MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &);
+    SparkFunIMU_status_t MAG_GetMagRaw(LSM303C_AxesRaw_t &);
+    SparkFunIMU_status_t MAG_TemperatureEN(LSM303C_MAG_TEMP_EN_t);
+    SparkFunIMU_status_t MAG_XYZ_AxDataAvailable(LSM303C_MAG_XYZDA_t &);
     float    readMag(LSM303C_AXIS_t);   // Reads the magnetometer data from IC
 
-    status_t MAG_ReadReg(LSM303C_MAG_REG_t, uint8_t &);
+    SparkFunIMU_status_t MAG_ReadReg(LSM303C_MAG_REG_t, uint8_t &);
     uint8_t  MAG_WriteReg(LSM303C_MAG_REG_t, uint8_t);
-    status_t ACC_ReadReg(LSM303C_ACC_REG_t, uint8_t &);
+    SparkFunIMU_status_t ACC_ReadReg(LSM303C_ACC_REG_t, uint8_t &);
     uint8_t  ACC_WriteReg(LSM303C_ACC_REG_t, uint8_t);
 };
 
