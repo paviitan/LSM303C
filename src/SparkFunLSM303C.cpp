@@ -88,98 +88,17 @@ float LSM303C::readMagZ()
 
 float LSM303C::readAccelX()
 {
-    uint8_t flag_ACC_STATUS_FLAGS;
-    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
-
-    if (response != IMU_SUCCESS) {
-        return NAN;
-    }
-
-    // Check for new data in the status flags with a mask
-    // If there isn't new data use the last data read.
-    // There are valid cases for this, like reading faster than refresh rate.
-    if (flag_ACC_STATUS_FLAGS & ACC_X_NEW_DATA_AVAILABLE) {
-        uint8_t valueL;
-        uint8_t valueH;
-
-        if (ACC_ReadReg(ACC_OUT_X_H, valueH)) {
-            return IMU_HW_ERROR;
-        }
-
-        if (ACC_ReadReg(ACC_OUT_X_L, valueL)) {
-            return IMU_HW_ERROR;
-        }
-
-        //convert from LSB to mg
-        return int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC;
-    }
-
-    // Should never get here
-    return NAN;
+    return readAccel(xAxis);
 }
 
 float LSM303C::readAccelY()
 {
-    uint8_t flag_ACC_STATUS_FLAGS;
-    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
-
-    if (response != IMU_SUCCESS) {
-        return NAN;
-    }
-
-    // Check for new data in the status flags with a mask
-    // If there isn't new data use the last data read.
-    // There are valid cases for this, like reading faster than refresh rate.
-    if (flag_ACC_STATUS_FLAGS & ACC_Y_NEW_DATA_AVAILABLE) {
-        uint8_t valueL;
-        uint8_t valueH;
-
-        if (ACC_ReadReg(ACC_OUT_Y_H, valueH)) {
-            return IMU_HW_ERROR;
-        }
-
-        if (ACC_ReadReg(ACC_OUT_Y_L, valueL)) {
-            return IMU_HW_ERROR;
-        }
-
-        //convert from LSB to mg
-        return int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC;
-    }
-
-    // Should never get here
-    return NAN;
+    return readAccel(yAxis);
 }
 
 float LSM303C::readAccelZ()
 {
-    uint8_t flag_ACC_STATUS_FLAGS;
-    SparkFunIMU_status_t response = ACC_Status_Flags(flag_ACC_STATUS_FLAGS);
-
-    if (response != IMU_SUCCESS) {
-        return NAN;
-    }
-
-    // Check for new data in the status flags with a mask
-    // If there isn't new data use the last data read.
-    // There are valid cases for this, like reading faster than refresh rate.
-    if (flag_ACC_STATUS_FLAGS & ACC_Z_NEW_DATA_AVAILABLE) {
-        uint8_t valueL;
-        uint8_t valueH;
-
-        if (ACC_ReadReg(ACC_OUT_Z_H, valueH)) {
-            return IMU_HW_ERROR;
-        }
-
-        if (ACC_ReadReg(ACC_OUT_Z_L, valueL)) {
-            return IMU_HW_ERROR;
-        }
-
-        //convert from LSB to mg
-        return (int16_t(((valueH << 8) | valueL)) * SENSITIVITY_ACC);
-    }
-
-    // Should never get here
-    return NAN;
+    return readAccel(zAxis);
 }
 
 
