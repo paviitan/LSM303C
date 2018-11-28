@@ -121,7 +121,7 @@ float LSM303C::readTempC()
         return NAN;
     }
 
-    temperature = (float)((valueH << 8) | valueL);
+    temperature = (float)(int16_t)((valueH << 8) | valueL);
     temperature /= 8; // 8 digits/˚C
     temperature += 25;// Reads 0 @ 25˚C
 
