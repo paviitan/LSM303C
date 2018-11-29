@@ -27,6 +27,12 @@ public:
     float  readTempC(void);
     float  readTempF(void);
 
+    //Magnetometer Interrupts
+    SparkFunIMU_status_t MAG_EnableInterrupt(bool, LSM303C_AXIS_t);
+    SparkFunIMU_status_t MAG_SetInterruptThreshold(int16_t);
+    SparkFunIMU_status_t MAG_ResetInterruptConfig();
+    SparkFunIMU_status_t MAG_ReadIntReg();
+
 protected:
     // Variables to store the most recently read raw data from sensor
     LSM303C_AxesRaw_t accelData = {NAN, NAN, NAN};

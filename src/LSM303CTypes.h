@@ -193,4 +193,25 @@ typedef enum {
     ACC_ZYX_OVERRUN             = 0x80
 } LSM303C_ACC_STATUS_FLAGS_t;
 
+// Magnetic interrupt configuration register
+typedef enum {
+    MAG_INT_CFG_IEN  = 0x00,
+    MAG_INT_CFG_IEL  = 0x01,
+    MAG_INT_CFG_IEA  = 0x03,
+    MAG_INT_CFG_ZIEN = 0x05,
+    MAG_INT_CFG_YIEN = 0x06,
+    MAG_INT_CFG_XIEN = 0x07,
+} LSM303C_MAG_INT_CFG_t;
+
+// Magnetic interrupt generator status register
+typedef enum {
+    MAG_INT_SRC_INT   = 0x00,
+    MAG_INT_SRC_MROI  = 0x01,
+    MAG_INT_SRC_NTH_Z = 0x02,
+    MAG_INT_SRC_NTH_Y = 0x03,
+    MAG_INT_SRC_NTH_X = 0x04,
+    MAG_INT_SRC_PTH_Z = 0x05,
+    MAG_INT_SRC_PTH_Y = 0x06,
+    MAG_INT_SRC_PTH_X = 0x07,
+} LMS303C_MAG_INT_SRC_t;
 #endif

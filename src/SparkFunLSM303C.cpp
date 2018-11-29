@@ -1,5 +1,5 @@
 #include "SparkFunLSM303C.h"
-
+#include "LOG.h" //TODO: Debugging, remove
 // Public methods
 LSM303C::LSM303C(I2C &i2c) : _i2c(i2c)
 {
@@ -622,4 +622,93 @@ SparkFunIMU_status_t LSM303C::ACC_GetAccRaw(LSM303C_AxesRaw_t &buff)
     buff.zAxis = (int16_t)((valueH << 8) | valueL);
 
     return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t LSM303C::MAG_EnableInterrupt(bool state, LSM303C_AXIS_t axis)
+{
+    /*
+    uint8_t currentConfig = 0x00;
+    uint8_t dataByte;
+    if(MAG_ReadReg(MAG_INT_CFG, currentConfig)){
+        return IMU_HW_ERROR;
+    }
+    if(state){
+        currentConfig |= MAG_INT_CFG_IEN;
+        currentConfig |= MAG_INT_CFG_IEA;
+        currentConfig |= ~(MAG_INT_CFG_IEL);
+    }
+    switch(axis){
+        case xAxis:
+            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_XIEN ));
+            break;
+        case yAxis:
+            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_YIEN ));
+            break;
+        case zAxis:
+            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_ZIEN ));
+            break;
+    }
+    */
+    uint8_t dataByte;
+    uint8_t cmd = 0xE5;
+    if (MAG_WriteReg(MAG_INT_CFG, cmd)) {
+        LOG_ERROR("Fail.");
+        return IMU_GENERIC_ERROR;
+    }
+    //reset latch
+    if (!MAG_ReadReg(MAG_INT_SRC, dataByte)) {
+        LOG_INFO("Latch reset.");
+    }
+    return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t LSM303C::MAG_SetInterruptThreshold(uint16_t threshold)
+{
+    //TODO: There is some inconsistency with the datasheet.
+    if (!(threshold < 16384 && threshold >= -16384)) {
+        LOG_ERROR("Threshold out of bounds.");
+        return IMU_OUT_OF_BOUNDS;
+    }
+    //uint8_t valueL = 0x01;
+    //uint8_t valueH = 0xff;
+    uint8_t valueL = 0x00;
+    uint8_t valueH = 0x00;
+    valueL = (threshold & 0xff);
+    valueH = (threshold >> 8);
+
+
+    MAG_WriteReg(MAG_INT_THS_L, valueL);
+    MAG_WriteReg(MAG_INT_THS_H, valueH);
+    //uint8_t cmd = 0x00; // Disable INT_MAG
+    //uint8_t cmd = 0xe5; // Enable INT_MAG pin, all axes, latch, activity
+    return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t LSM303C::MAG_ResetInterruptConfig()
+{
+    uint8_t cmd = 0x08;
+    if (!MAG_WriteReg(MAG_INT_CFG, cmd)) {
+        LOG_INFO("MAG_INT_CFG reset to 0x%X", cmd);
+    }
+    return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t LSM303C::MAG_ReadIntReg()
+{
+    int16_t threshold = 0x00;
+    uint8_t valueH = 0x00;
+    uint8_t valueL = 0x00;
+    uint8_t intCfg = 0x00;
+    uint8_t intSrc = 0x00;
+
+    MAG_ReadReg(MAG_INT_CFG, intCfg);
+    MAG_ReadReg(MAG_INT_SRC, intSrc);
+    MAG_ReadReg(MAG_INT_THS_H, valueH);
+    MAG_ReadReg(MAG_INT_THS_L, valueL);
+    threshold = ((valueH << 8) | valueL);
+    LOG_INFO("MAG_INT_CFG 0x%X", intCfg);
+    LOG_INFO("MAG_INT_SRC 0x%X", intSrc);
+    LOG_INFO("MAG_INT_THS H 0x%X L 0x%X 0x%X, %d", valueH, valueL, threshold, threshold);
+    return IMU_SUCCESS;
+
 }
