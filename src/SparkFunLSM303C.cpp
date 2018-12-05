@@ -626,69 +626,84 @@ SparkFunIMU_status_t LSM303C::ACC_GetAccRaw(LSM303C_AxesRaw_t &buff)
 
 SparkFunIMU_status_t LSM303C::MAG_EnableInterrupt(bool state, LSM303C_AXIS_t axis)
 {
-    /*
+    int ret = 0;
     uint8_t currentConfig = 0x00;
-    uint8_t dataByte;
-    if(MAG_ReadReg(MAG_INT_CFG, currentConfig)){
+    if (MAG_ReadReg(MAG_INT_CFG, currentConfig)) {
         return IMU_HW_ERROR;
     }
-    if(state){
-        currentConfig |= MAG_INT_CFG_IEN;
-        currentConfig |= MAG_INT_CFG_IEA;
-        currentConfig |= ~(MAG_INT_CFG_IEL);
+    if (state) {
+        currentConfig |= (1 << MAG_INT_CFG_IEN); //Enable interrupts
+        currentConfig &= ~(1 << MAG_INT_CFG_IEL); //Enable latch
+        switch (axis) {
+            case xAxis:
+                currentConfig |= 1 << MAG_INT_CFG_XIEN;
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+            case yAxis:
+                currentConfig |= 1 << MAG_INT_CFG_YIEN;
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+            case zAxis:
+                currentConfig |= 1 << MAG_INT_CFG_ZIEN;
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+        }
+    } else {
+        switch (axis) {
+            case xAxis:
+                currentConfig &= ~(1 << MAG_INT_CFG_XIEN);
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+            case yAxis:
+                currentConfig &= ~(1 << MAG_INT_CFG_YIEN);
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+            case zAxis:
+                currentConfig &= ~(1 << MAG_INT_CFG_ZIEN);
+                ret += MAG_WriteReg(MAG_INT_CFG, currentConfig);
+                break;
+        }
     }
-    switch(axis){
-        case xAxis:
-            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_XIEN ));
-            break;
-        case yAxis:
-            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_YIEN ));
-            break;
-        case zAxis:
-            MAG_WriteReg(MAG_INT_CFG,(currentConfig | MAG_INT_CFG_ZIEN ));
-            break;
-    }
-    */
-    uint8_t dataByte;
-    uint8_t cmd = 0xE5;
-    if (MAG_WriteReg(MAG_INT_CFG, cmd)) {
-        LOG_ERROR("Fail.");
-        return IMU_GENERIC_ERROR;
-    }
-    //reset latch
-    if (!MAG_ReadReg(MAG_INT_SRC, dataByte)) {
-        LOG_INFO("Latch reset.");
-    }
-    return IMU_SUCCESS;
+
+    return (ret == IMU_SUCCESS) ? IMU_SUCCESS : IMU_HW_ERROR;
 }
 
 SparkFunIMU_status_t LSM303C::MAG_SetInterruptThreshold(uint16_t threshold)
 {
-    //TODO: There is some inconsistency with the datasheet.
-    if (!(threshold < 16384 && threshold >= -16384)) {
-        LOG_ERROR("Threshold out of bounds.");
-        return IMU_OUT_OF_BOUNDS;
+    /* @Note: Threshold value should be unsigned 15bit.
+     * Values below 0x2FF seem to only generate wakeup if sensor is tilted.
+     */
+    if (threshold > 0x4fff) {
+        threshold = 0x4fff;
     }
-    //uint8_t valueL = 0x01;
-    //uint8_t valueH = 0xff;
     uint8_t valueL = 0x00;
     uint8_t valueH = 0x00;
     valueL = (threshold & 0xff);
-    valueH = (threshold >> 8);
+    valueH = ((threshold >> 8) & 0x4f);
 
-
-    MAG_WriteReg(MAG_INT_THS_L, valueL);
-    MAG_WriteReg(MAG_INT_THS_H, valueH);
-    //uint8_t cmd = 0x00; // Disable INT_MAG
-    //uint8_t cmd = 0xe5; // Enable INT_MAG pin, all axes, latch, activity
+    if (MAG_WriteReg(MAG_INT_THS_L, valueL)) {
+        return IMU_HW_ERROR;
+    }
+    if (MAG_WriteReg(MAG_INT_THS_H, valueH)) {
+        return IMU_HW_ERROR;
+    }
     return IMU_SUCCESS;
 }
 
 SparkFunIMU_status_t LSM303C::MAG_ResetInterruptConfig()
 {
-    uint8_t cmd = 0x08;
-    if (!MAG_WriteReg(MAG_INT_CFG, cmd)) {
-        LOG_INFO("MAG_INT_CFG reset to 0x%X", cmd);
+    uint8_t cmd = 0x08; // MAG_INT_CFG default value
+    if (MAG_WriteReg(MAG_INT_CFG, cmd)) {
+        return IMU_HW_ERROR;
+    }
+    return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t LSM303C::MAG_ResetInterruptLatch()
+{
+    uint8_t intSrc;
+    if (MAG_ReadReg(MAG_INT_SRC, intSrc)) {
+        return IMU_HW_ERROR;
     }
     return IMU_SUCCESS;
 }
@@ -707,6 +722,9 @@ SparkFunIMU_status_t LSM303C::MAG_ReadIntReg()
     MAG_ReadReg(MAG_INT_THS_L, valueL);
     threshold = ((valueH << 8) | valueL);
     LOG_INFO("MAG_INT_CFG 0x%X", intCfg);
+    if (intSrc & 0x02) {
+        LOG_INFO("MROI bit set.");
+    }
     LOG_INFO("MAG_INT_SRC 0x%X", intSrc);
     LOG_INFO("MAG_INT_THS H 0x%X L 0x%X 0x%X, %d", valueH, valueL, threshold, threshold);
     return IMU_SUCCESS;
