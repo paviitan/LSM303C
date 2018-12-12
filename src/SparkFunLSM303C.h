@@ -29,7 +29,7 @@ public:
 
     //Magnetometer Interrupts
     SparkFunIMU_status_t MAG_EnableInterrupt(bool, LSM303C_AXIS_t);
-    SparkFunIMU_status_t MAG_SetInterruptThreshold(uint16_t);
+    SparkFunIMU_status_t MAG_SetInterruptThreshold(float);
     SparkFunIMU_status_t MAG_ResetInterruptConfig();
     SparkFunIMU_status_t MAG_ResetInterruptLatch();
     SparkFunIMU_status_t MAG_ReadIntReg();

@@ -668,18 +668,23 @@ SparkFunIMU_status_t LSM303C::MAG_EnableInterrupt(bool state, LSM303C_AXIS_t axi
     return (ret == IMU_SUCCESS) ? IMU_SUCCESS : IMU_HW_ERROR;
 }
 
-SparkFunIMU_status_t LSM303C::MAG_SetInterruptThreshold(uint16_t threshold)
+SparkFunIMU_status_t LSM303C::MAG_SetInterruptThreshold(float threshold)
 {
-    /* @Note: Threshold value should be unsigned 15bit.
-     * Values below 0x2FF seem to only generate wakeup if sensor is tilted.
+    /* @Note: The value is expressed in 15-bit unsigned.
+     * Even if the threshold is expressed in absolute value, the device detects
+     * both positive and negative thresholds.
+     *
+     * Bit 15 must be set to '0' for the correct operation of the device.
      */
-    if (threshold > 0x4fff) {
-        threshold = 0x4fff;
+    if (threshold > SENSITIVITY_MAG * INT16_MAX || threshold < SENSITIVITY_MAG) {
+        return IMU_OUT_OF_BOUNDS;
     }
+    uint16_t conversion = (uint16_t)(threshold / SENSITIVITY_MAG);
+
     uint8_t valueL = 0x00;
     uint8_t valueH = 0x00;
-    valueL = (threshold & 0xff);
-    valueH = ((threshold >> 8) & 0x4f);
+    valueL = (conversion & 0xff);
+    valueH = ((conversion >> 8) & 0x7f);
 
     if (MAG_WriteReg(MAG_INT_THS_L, valueL)) {
         return IMU_HW_ERROR;
