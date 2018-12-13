@@ -4,6 +4,9 @@
 #define __LSM303C_TYPES_H__
 #include "mbed.h"
 
+#define LSM303C_MAG_WHO_AM_I 0x3D
+#define LSM303C_ACC_WHO_AM_I 0x41
+
 ////////////////////////////////////
 // LSM303C Magnetometer Registers //
 ////////////////////////////////////

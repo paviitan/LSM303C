@@ -735,3 +735,19 @@ SparkFunIMU_status_t LSM303C::MAG_ReadIntReg()
     return IMU_SUCCESS;
 
 }
+
+SparkFunIMU_status_t  LSM303C::MAG_GetWhoAmI(uint8_t &regData)
+{
+    if (MAG_ReadReg(MAG_WHO_AM_I, regData)) {
+        return IMU_HW_ERROR;
+    }
+    return IMU_SUCCESS;
+}
+
+SparkFunIMU_status_t  LSM303C::ACC_GetWhoAmI(uint8_t &regData)
+{
+    if (ACC_ReadReg(ACC_WHO_AM_I, regData)) {
+        return IMU_HW_ERROR;
+    }
+    return IMU_SUCCESS;
+}

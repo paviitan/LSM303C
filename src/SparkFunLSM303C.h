@@ -34,6 +34,10 @@ public:
     SparkFunIMU_status_t MAG_ResetInterruptLatch();
     SparkFunIMU_status_t MAG_ReadIntReg();
 
+    //"Who am I" -registers
+    SparkFunIMU_status_t  MAG_GetWhoAmI(uint8_t &);
+    SparkFunIMU_status_t  ACC_GetWhoAmI(uint8_t &);
+
 protected:
     // Variables to store the most recently read raw data from sensor
     LSM303C_AxesRaw_t accelData = {NAN, NAN, NAN};
